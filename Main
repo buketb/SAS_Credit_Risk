@@ -1,1 +1,29 @@
-#
+#SAS
+
+
+ods graphics on;
+DATA rr.lgd1;
+SET rr.lgd;
+IF lgd_time > 0.0001 & ldg_time < 0.99999;
+RUN;
+
+PROC UNIVARIATE data = rr.lgd1;
+VAR lgd_time y_probit;
+Histogram;
+RUN;
+ods graphics off;
+
+ods graphics on;
+PROC REG data=rr.lgd1;
+MODEL lgd_time = ltv;
+RUN; QUIT; 
+ods graphics off;
+
+
+ods graphics on;
+PROC REG data=rr.lgd1;
+MODEL y_probit = ltv;
+RUN; QUIT;
+ods graphics off;
+
+
