@@ -26,4 +26,32 @@ MODEL y_probit = ltv;
 RUN; QUIT;
 ods graphics off;
 
+DATA rr.lgd1_predict;
+LTV_predict = 0.8;
+DO i = 1 to 10000;
+eps = RANNOR(12345);
+y_probit_predict= -2.04140 + 1.40544 + LTV_predict + 1.19795*eps;
+LGD_predict = PROBNORM(y_probit_predict);
+output;
+END;
+RUN; QUIT;
+
+PROC UNIVARIATE data = rr.ldg1_predict;
+VAR y_probit_predict_predict;
+Histogram;
+RUN;
+ods graphics off;
+
+
+#LGD Modelierung- Beta Regression
+
+
+
+
+
+
+
+
+
+
 
