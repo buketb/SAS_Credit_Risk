@@ -45,6 +45,132 @@ ods graphics off;
 
 #LGD Modelierung- Beta Regression
 
+*Beta GLM;
+ods graphics on;
+PROC GLIMMIX DATA = rr.lgd1;
+MODEL lgd_time = LTV / DIST = Beta SOLUTION;
+RUN;
+ods graphics off;
+
+
+
+ods graphics on;
+DATA rr.lgd1_predictbeta;
+LTV_predict = 0.8;
+mu = 1 / (1 + exp(1.7907 - 1.1949 * LTV_predict));
+scale = 1.5615;
+alpha = mu * scale;
+beta = (1 - mu)* scale;
+DO i = 1 t0 10000;
+LGD_predict = RAND("BETA", alpha, beta);
+output;
+END;
+RUN; QUIT;
+
+PROC UNIVARIATE  data = rr.ldg1_predictbeta;
+VAR LGD_predict;
+Histogram;
+RUN;
+ods graphics off;
+
+* Binomial Distribution with PROBIT Link Function;
+ods graphics on;
+PROC GLIMMIX DATA = rr.defaults;
+MODEL D_B / N_B = GDP_chg / DIST = BINOMIAL LINK = PROBIT SOLUTION;
+RUN;
+ods graphics off;
+
+
+odds graphics on; 
+PROC FMM data=data.lgd gconv=0 COMPONENTINFO PLOTS=(ALL);
+model lgd_time = / k=3 dist=NORMAL;
+RUN;
+ods graphics off;
+
+
+ods graphics on;
+PROC FMM data=data.lgd gconv=0 COMPONENTINFO PLOTS=(ALL);
+model lgd_time = ltv / k=3 dist=NORMAL;
+probmodel ltv;
+RUN;
+ods graphics off;
+
+* ARMA Process:
+
+data armasim1;
+do t=1 to 500;
+if t=1 then do; y=0; u=0;
+end;
+else do;
+u_1=u;
+u=rannor(1234);
+y_1=y;
+y=0.6*y_1 + u +0.9*u_1;
+end;
+output;
+end;
+RUN;
+PROC ARIMA data = armasim1;
+identify var=y nlag=2;
+estimate p=1 q=1 noint;
+Forecast;
+RUN;
+
+
+PROC arima data = rr.data_returns;
+identify var = log_dax30 nlag=10 stationarity=(adf);
+estimate p=1 q=1;
+RUN;
+
+
+PROC arima data=rr.data_returns;
+identify var=dax30return nlag=10 stationarity=(adf);
+estimate p=1 q=1;
+RUN;
+
+
+
+*till95
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
